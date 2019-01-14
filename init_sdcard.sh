@@ -29,7 +29,7 @@ while getopts ":d:e:s" opt; do
 done
 
 shift $((OPTIND-1))
-HOSTS=($@)
+HOSTS=("$@")
 
 if [ -z "${HOSTS[0]}" ] || [ -z "$DEVICE" ]; then
    echo "Usage: $0 -d usb_device -e essid hostname(s)"
