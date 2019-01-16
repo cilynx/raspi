@@ -6,8 +6,11 @@ if [ ! -d "$DOWNLOAD_DIR" ]; then
    DOWNLOAD_DIR=$(pwd)
 fi
 
-while getopts ":d:e:s" opt; do
+while getopts ":a:d:e:s" opt; do
    case ${opt} in
+      a )
+	 SSH_KEY=$OPTARG
+	 ;;
       d )
 	 DEVICE=$OPTARG
 	 ;;
@@ -109,6 +112,12 @@ for HOST in "${HOSTS[@]}"; do
    sudo mount -o loop,offset=$(( UNITS * ROOTFS_OFFSET )) "$DOWNLOAD_DIR/$IMG_FILE" "$ROOTFS_DIR"
    echo "($HOST): Setting hostname"
    echo "$HOST" | sudo tee "$ROOTFS_DIR/etc/hostname" > /dev/null
+   if [ -n "$SSH_KEY" ]; then
+      echo "($HOST): sudo mkdir $ROOTFS_DIR/home/pi/.ssh"
+      sudo mkdir "$ROOTFS_DIR/home/pi/.ssh"
+      echo "($HOST): sudo cp $SSH_KEY $ROOTFS_DIR/home/pi/.ssh/authorized_keys"
+      sudo cp "$SSH_KEY" "$ROOTFS_DIR/home/pi/.ssh/authorized_keys"
+   fi
    echo "($HOST): sudo umount $ROOTFS_DIR"
    sudo umount "$ROOTFS_DIR"
 
