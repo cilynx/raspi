@@ -6,7 +6,7 @@ if [ ! -d "$DOWNLOAD_DIR" ]; then
    DOWNLOAD_DIR=$(pwd)
 fi
 
-while getopts ":a:d:e:s" opt; do
+while getopts ":a:d:e:g:r:s" opt; do
    case ${opt} in
       a )
 	 SSH_KEY=$OPTARG
@@ -17,6 +17,12 @@ while getopts ":a:d:e:s" opt; do
       e)
 	 ESSID=$OPTARG
 	 ;;
+      g)
+    ACT_CONF="dtparam=act_led_trigger=$OPTARG"
+    ;;
+      r)
+    PWR_CONF="dtparam=pwr_led_trigger=$OPTARG"
+    ;;
       s)
 	 DRYRUN=1
 	 ;;
@@ -35,7 +41,7 @@ shift $((OPTIND-1))
 HOSTS=("$@")
 
 if [ -z "${HOSTS[0]}" ] || [ -z "$DEVICE" ]; then
-   echo "Usage: $0 -d usb_device -e essid hostname(s)"
+   echo "Usage: $0 [-a ssh_public_key] -d usb_device -e essid [-g green_led_trigger ] [-r red_led_trigger ] hostname(s)"
    exit
 fi
 
@@ -69,6 +75,18 @@ sudo mount -o loop,offset=$(( UNITS * BOOT_OFFSET )) "$DOWNLOAD_DIR/$IMG_FILE" "
 echo "Enabling SSH..."
 echo "sudo touch $BOOT_DIR/ssh"
 sudo touch "$BOOT_DIR/ssh"
+
+if [ -n "$PWR_CONF" ] || [ -n "$ACT_CONF" ]; then
+   echo "Configuring LEDs..."
+   if [ -n "$PWR_CONF" ]; then
+      echo "echo \"$PWR_CONF\" | sudo tee --append $BOOT_DIR/config.txt"
+      echo "$PWR_CONF" | sudo tee --append $BOOT_DIR/config.txt
+   fi
+   if [ -n "$ACT_CONF" ]; then
+      echo "echo \"$ACT_CONF\" | sudo tee --append $BOOT_DIR/config.txt"
+      echo "$ACT_CONF" | sudo tee --append $BOOT_DIR/config.txt
+   fi
+fi
 
 if [ -n "$ESSID" ]
 then
@@ -113,8 +131,8 @@ for HOST in "${HOSTS[@]}"; do
    echo "($HOST): Setting hostname"
    echo "$HOST" | sudo tee "$ROOTFS_DIR/etc/hostname" > /dev/null
    if [ -n "$SSH_KEY" ]; then
-      echo "($HOST): sudo mkdir $ROOTFS_DIR/home/pi/.ssh"
-      sudo mkdir "$ROOTFS_DIR/home/pi/.ssh"
+      echo "($HOST): sudo mkdir -p $ROOTFS_DIR/home/pi/.ssh"
+      sudo mkdir -p "$ROOTFS_DIR/home/pi/.ssh"
       echo "($HOST): sudo cp $SSH_KEY $ROOTFS_DIR/home/pi/.ssh/authorized_keys"
       sudo cp "$SSH_KEY" "$ROOTFS_DIR/home/pi/.ssh/authorized_keys"
    fi
