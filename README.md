@@ -11,14 +11,15 @@ This will prompt for the wifi password once and then prompt each time you need t
 
 ## setup_leds.sh
 
-By default, the LEDs on the Pi 3B+ are solid red for power and flashing green for sdcard activity.  There are, however, quite a few things you can trigger on:
+By default, the LEDs on the Pi 3B+ are solid red for power and flashing green for SD card (`mmc0`) activity.  There are, however, quite a few things you can trigger on:
 ```
 none rc-feedback kbd-scrolllock kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock timer oneshot heartbeat backlight gpio [cpu] cpu0 cpu1 cpu2 cpu3 default-on input panic mmc1 mmc0 rfkill-any rfkill0 rfkill1
 ```
-For reasons I don't fully understand, the red LED cannot be controlled as granularly as the green one.  Basically red is on or off while green has variable brightness.  To trigger the green activity LED on cpu utilization and the red "power" LED on sdcard activity for my cluster nodes:
+For reasons I don't fully understand, the red LED cannot be controlled as granularly as the green one.  Basically red is on or off while green has variable brightness.  To trigger the green activity LED on cpu utilization and the red power LED on sdcard activity for my cluster nodes:
 ```
 ./setup_leds.sh -g cpu -r mmc0 clusterpi{00.10}
 ```
+By default, the LED settings will be reset to default at boot.  If you want to persist in `/boot/config.txt`, just add the `-p` flag.
 
 ## water_the_plants.py
 
