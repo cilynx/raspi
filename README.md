@@ -5,7 +5,7 @@ Raspberry Pi scripts for various projects
 
 This script pulls down the latest Raspbian, enables SSH, sets the hostname, optionally sets up wpa_supplicant.conf, and writes the image to the sdcard.  I use it for preparing Pis for cluster duty as follows:
 ```
-./init_sdcard.sh -d /dev/sdb -e clusternet clusterpi{00..10}
+./init_sdcard.sh -a ~/.ssh/id_rsa.pub -d usb_device -e clusternet -g cpu -r mmc0 clusterpi{00..10}
 ```
 This will prompt for the wifi password once and then prompt each time you need to switch the sdcard.  Everything else is automagic.  If you don't want to configure wifi, just leave off the `-e` flag.
 
