@@ -21,6 +21,13 @@ For reasons I don't fully understand, the red LED cannot be controlled as granul
 ```
 By default, the LED settings will be reset to default at boot.  If you want to persist in `/boot/config.txt`, just add the `-p` flag.
 
+## setup_docker.sh
+
+```
+./setup_docker.sh [-j manager] nodes
+```
+If you provide an existing manager (`-j`), then all nodes will be setup with Docker then join the provided manager's swarm as workers.  If you don't provide an existing manager, then the first node passed in will initialize a new swarm as the lead manager and the remaining nodes passed in will be added to its swarm as workers.
+
 ## water_the_plants.py
 
 A simple polling app that measures soil moisture content using a [ubiquitous soil sensor](http://amzn.to/1PvM0Lf).  The cool part is that it only powers up the sensor when actively polling, so you save power and the sensor should be slower to corrode since it's not generally acting as an electrode.  If you care about power efficiency and you don't care about logging or remote control, you might be better off using a [purpose built board](http://amzn.to/1UBTgE4) as they're super cheap and much less power hungry than the Pi.
